@@ -92,7 +92,7 @@
     .registers 5
 
     .prologue
-    const/4 v0, 0x1
+    const/4 v0, 0x0
 
     .line 961
     iget-object v1, p0, Lcom/android/server/TextServicesManagerService$TextServicesSettings;->mResolver:Landroid/content/ContentResolver;

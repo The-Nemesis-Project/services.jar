@@ -20,14 +20,17 @@
 # instance fields
 .field private final mDisplayManager:Lcom/android/server/display/DisplayManagerService;
 
+.field private mElectronBeam:Lcom/android/server/power/ElectronBeam;
+
 .field private mSurfaceControl:Landroid/view/SurfaceControl;
 
 
 # direct methods
-.method public constructor <init>(Lcom/android/server/display/DisplayManagerService;Landroid/view/SurfaceControl;)V
-    .registers 4
+.method public constructor <init>(Lcom/android/server/display/DisplayManagerService;Landroid/view/SurfaceControl;Lcom/android/server/power/ElectronBeam;)V
+    .registers 5
     .param p1, "displayManager"    # Lcom/android/server/display/DisplayManagerService;
     .param p2, "surfaceControl"    # Landroid/view/SurfaceControl;
+    .param p3, "electronBeam"    # Lcom/android/server/power/ElectronBeam;
 
     .prologue
     .line 690
@@ -38,6 +41,8 @@
 
     .line 692
     iput-object p2, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mSurfaceControl:Landroid/view/SurfaceControl;
+
+    iput-object p3, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mElectronBeam:Lcom/android/server/power/ElectronBeam;
 
     .line 693
     iget-object v0, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mDisplayManager:Lcom/android/server/display/DisplayManagerService;
@@ -110,6 +115,14 @@
 
     .line 710
     :cond_7
+    iget-object v1, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mElectronBeam:Lcom/android/server/power/ElectronBeam;
+
+    invoke-virtual {v1}, Lcom/android/server/power/ElectronBeam;->getBeamPrep()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_1b
+
     iget-object v1, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mDisplayManager:Lcom/android/server/display/DisplayManagerService;
 
     const/4 v2, 0x0
@@ -122,28 +135,31 @@
     .local v0, "displayInfo":Landroid/view/DisplayInfo;
     iget v1, v0, Landroid/view/DisplayInfo;->rotation:I
 
-    packed-switch v1, :pswitch_data_6c
+    packed-switch v1, :pswitch_data_76
 
     .line 729
-    :goto_13
+    :cond_1b
+    :goto_1b
     monitor-exit p0
 
     goto :goto_6
 
     .end local v0    # "displayInfo":Landroid/view/DisplayInfo;
-    :catchall_15
+    :catchall_1d
     move-exception v1
 
     monitor-exit p0
-    :try_end_17
-    .catchall {:try_start_1 .. :try_end_17} :catchall_15
+    :try_end_1f
+    .catchall {:try_start_1 .. :try_end_1f} :catchall_1d
 
     throw v1
 
     .line 713
     .restart local v0    # "displayInfo":Landroid/view/DisplayInfo;
-    :pswitch_18
-    :try_start_18
+    :pswitch_20
+    :try_start_20
+    goto :goto_1b
+
     iget-object v1, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mSurfaceControl:Landroid/view/SurfaceControl;
 
     const/4 v2, 0x0
@@ -165,10 +181,12 @@
 
     invoke-virtual {v1, v2, v3, v4, v5}, Landroid/view/SurfaceControl;->setMatrix(FFFF)V
 
-    goto :goto_13
+    goto :goto_1b
 
     .line 717
-    :pswitch_2b
+    :pswitch_34
+    goto :goto_1b
+
     iget-object v1, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mSurfaceControl:Landroid/view/SurfaceControl;
 
     const/4 v2, 0x0
@@ -192,10 +210,10 @@
 
     invoke-virtual {v1, v2, v3, v4, v5}, Landroid/view/SurfaceControl;->setMatrix(FFFF)V
 
-    goto :goto_13
+    goto :goto_1b
 
     .line 721
-    :pswitch_40
+    :pswitch_4a
     iget-object v1, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mSurfaceControl:Landroid/view/SurfaceControl;
 
     iget v2, v0, Landroid/view/DisplayInfo;->logicalWidth:I
@@ -221,10 +239,10 @@
 
     invoke-virtual {v1, v2, v3, v4, v5}, Landroid/view/SurfaceControl;->setMatrix(FFFF)V
 
-    goto :goto_13
+    goto :goto_1b
 
     .line 725
-    :pswitch_57
+    :pswitch_61
     iget-object v1, p0, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;->mSurfaceControl:Landroid/view/SurfaceControl;
 
     iget v2, v0, Landroid/view/DisplayInfo;->logicalWidth:I
@@ -247,17 +265,17 @@
     const/4 v5, 0x0
 
     invoke-virtual {v1, v2, v3, v4, v5}, Landroid/view/SurfaceControl;->setMatrix(FFFF)V
-    :try_end_6b
-    .catchall {:try_start_18 .. :try_end_6b} :catchall_15
+    :try_end_75
+    .catchall {:try_start_20 .. :try_end_75} :catchall_1d
 
-    goto :goto_13
+    goto :goto_1b
 
     .line 711
-    :pswitch_data_6c
+    :pswitch_data_76
     .packed-switch 0x0
-        :pswitch_18
-        :pswitch_2b
-        :pswitch_40
-        :pswitch_57
+        :pswitch_20
+        :pswitch_34
+        :pswitch_4a
+        :pswitch_61
     .end packed-switch
 .end method

@@ -17,6 +17,8 @@
 # static fields
 .field static final synthetic $assertionsDisabled:Z
 
+.field private static final CONFIG_FILE:Ljava/lang/String; = "/system/etc/fbs_exclusions.txt"
+
 .field public static LIMIT_NUM_OF_MULTI_INSTANCE:I = 0x0
 
 .field public static START_ACTIVITY_WITH_LAST_PINUP:Z = false
@@ -95,6 +97,17 @@
 .field private mCurrentArrangeState:I
 
 .field private mCurrentLaunchMode:I
+
+.field private mFBSExclusions:Ljava/util/List;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "Ljava/util/List",
+            "<",
+            "Ljava/lang/String;",
+            ">;"
+        }
+    .end annotation
+.end field
 
 .field mFixedRatioAppList:Ljava/util/ArrayList;
     .annotation system Ldalvik/annotation/Signature;
@@ -1642,6 +1655,22 @@
     invoke-direct {v0, v1, v2, v3, v4}, Landroid/graphics/Rect;-><init>(IIII)V
 
     return-object v0
+.end method
+
+.method private checkHalfSplit()V
+    .registers 2
+
+    .prologue
+    .line 989
+    iget-object v0, p0, Lcom/android/server/am/MultiWindowManagerService;->mContext:Landroid/content/Context;
+
+    invoke-static {v0}, Landroid/sec/multiwindow/impl/MultiWindowManager;->isSupportQuadView(Landroid/content/Context;)Z
+
+    move-result v0
+
+    iput-boolean v0, p0, Lcom/android/server/am/MultiWindowManagerService;->mSupportHalfSplit:Z
+
+    return-void
 .end method
 
 .method private getEmptySplitZone(Ljava/util/ArrayList;)I
@@ -5607,7 +5636,7 @@
 
     .line 308
     .local v16, "zoneInfos":[Landroid/util/Pair;, "[Landroid/util/Pair<Landroid/graphics/Rect;Ljava/lang/Integer;>;"
-    sparse-switch p1, :sswitch_data_26a
+    sparse-switch p1, :sswitch_data_270
 
     .line 366
     :goto_1cf
@@ -5622,7 +5651,7 @@
 
     .local v9, "i$":I
     :goto_1d3
-    if-ge v9, v10, :cond_267
+    if-ge v9, v10, :cond_26c
 
     aget-object v15, v2, v9
 
@@ -5644,7 +5673,7 @@
 
     move-result v17
 
-    if-eqz v17, :cond_263
+    if-eqz v17, :cond_268
 
     .line 369
     iget-object v0, v15, Landroid/util/Pair;->second:Ljava/lang/Object;
@@ -5698,7 +5727,7 @@
 
     .line 317
     :sswitch_1fb
-    if-nez p5, :cond_21e
+    if-nez p5, :cond_223
 
     .line 318
     move/from16 v0, p4
@@ -5720,6 +5749,10 @@
     :cond_20a
     move-object/from16 v0, p0
 
+    invoke-direct/range {v0 .. v0}, Lcom/android/server/am/MultiWindowManagerService;->checkHalfSplit()V
+
+    move-object/from16 v0, p0
+
     iget-boolean v0, v0, Lcom/android/server/am/MultiWindowManagerService;->mSupportHalfSplit:Z
 
     move/from16 v17, v0
@@ -5730,7 +5763,7 @@
 
     move/from16 v1, v18
 
-    if-ne v0, v1, :cond_21b
+    if-ne v0, v1, :cond_220
 
     .line 322
     move-object/from16 v16, v5
@@ -5738,32 +5771,32 @@
     goto :goto_1cf
 
     .line 324
-    :cond_21b
+    :cond_220
     move-object/from16 v16, v14
 
     goto :goto_1cf
 
     .line 328
-    :cond_21e
+    :cond_223
     move-object/from16 v16, v14
 
     .line 330
     goto :goto_1cf
 
     .line 332
-    :sswitch_221
-    if-nez p5, :cond_233
+    :sswitch_226
+    if-nez p5, :cond_238
 
     .line 333
     move/from16 v0, p4
 
-    if-le v3, v0, :cond_230
+    if-le v3, v0, :cond_235
 
     sub-int v17, v11, p4
 
     move/from16 v0, v17
 
-    if-ge v3, v0, :cond_230
+    if-ge v3, v0, :cond_235
 
     .line 334
     move-object/from16 v16, v14
@@ -5771,32 +5804,32 @@
     goto :goto_1cf
 
     .line 336
-    :cond_230
+    :cond_235
     move-object/from16 v16, v5
 
     goto :goto_1cf
 
     .line 339
-    :cond_233
+    :cond_238
     move-object/from16 v16, v6
 
     .line 341
     goto :goto_1cf
 
     .line 343
-    :sswitch_236
-    if-nez p5, :cond_248
+    :sswitch_23b
+    if-nez p5, :cond_24d
 
     .line 344
     move/from16 v0, p4
 
-    if-le v3, v0, :cond_245
+    if-le v3, v0, :cond_24a
 
     sub-int v17, v11, p4
 
     move/from16 v0, v17
 
-    if-ge v3, v0, :cond_245
+    if-ge v3, v0, :cond_24a
 
     .line 345
     move-object/from16 v16, v14
@@ -5804,32 +5837,32 @@
     goto :goto_1cf
 
     .line 347
-    :cond_245
+    :cond_24a
     move-object/from16 v16, v5
 
     goto :goto_1cf
 
     .line 350
-    :cond_248
+    :cond_24d
     move-object/from16 v16, v7
 
     .line 352
     goto :goto_1cf
 
     .line 354
-    :sswitch_24b
-    if-nez p5, :cond_25f
+    :sswitch_250
+    if-nez p5, :cond_264
 
     .line 355
     move/from16 v0, p4
 
-    if-le v3, v0, :cond_25b
+    if-le v3, v0, :cond_260
 
     sub-int v17, v11, p4
 
     move/from16 v0, v17
 
-    if-ge v3, v0, :cond_25b
+    if-ge v3, v0, :cond_260
 
     .line 356
     move-object/from16 v16, v14
@@ -5837,13 +5870,13 @@
     goto/16 :goto_1cf
 
     .line 358
-    :cond_25b
+    :cond_260
     move-object/from16 v16, v5
 
     goto/16 :goto_1cf
 
     .line 361
-    :cond_25f
+    :cond_264
     move-object/from16 v16, v8
 
     goto/16 :goto_1cf
@@ -5854,7 +5887,7 @@
     .restart local v10    # "len$":I
     .restart local v13    # "rect":Landroid/graphics/Rect;
     .restart local v15    # "zone":Landroid/util/Pair;, "Landroid/util/Pair<Landroid/graphics/Rect;Ljava/lang/Integer;>;"
-    :cond_263
+    :cond_268
     add-int/lit8 v9, v9, 0x1
 
     goto/16 :goto_1d3
@@ -5862,21 +5895,23 @@
     .line 373
     .end local v13    # "rect":Landroid/graphics/Rect;
     .end local v15    # "zone":Landroid/util/Pair;, "Landroid/util/Pair<Landroid/graphics/Rect;Ljava/lang/Integer;>;"
-    :cond_267
+    :cond_26c
     const/16 v17, 0x0
 
     goto :goto_1f1
 
     .line 308
-    :sswitch_data_26a
+    nop
+
+    :sswitch_data_270
     .sparse-switch
         0x1 -> :sswitch_1cf
         0x2 -> :sswitch_1f8
         0x4 -> :sswitch_1cf
         0x8 -> :sswitch_1fb
-        0x10 -> :sswitch_221
-        0x20 -> :sswitch_236
-        0x40 -> :sswitch_24b
+        0x10 -> :sswitch_226
+        0x20 -> :sswitch_23b
+        0x40 -> :sswitch_250
     .end sparse-switch
 .end method
 
@@ -7525,6 +7560,8 @@
 
     .line 1477
     :cond_8
+    const/4 v0, 0x1
+
     iget-object v1, p0, Lcom/android/server/am/MultiWindowManagerService;->mSupportMultiInstanceAppList:Ljava/util/ArrayList;
 
     iget-object v2, p1, Landroid/content/pm/ActivityInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
@@ -7535,7 +7572,7 @@
 
     move-result v1
 
-    if-nez v1, :cond_26
+    if-nez v1, :cond_27
 
     iget-object v1, p1, Landroid/content/pm/ActivityInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
 
@@ -7556,14 +7593,14 @@
     if-eqz v1, :cond_7
 
     .line 1479
-    :cond_26
+    :cond_27
     const/4 v0, 0x1
 
     goto :goto_7
 .end method
 
 .method public isSupportApp(Ljava/lang/String;)Z
-    .registers 3
+    .registers 6
     .param p1, "packageName"    # Ljava/lang/String;
 
     .prologue
@@ -7588,11 +7625,113 @@
     :cond_10
     const/4 v0, 0x1
 
-    .line 1416
+    .line 1420
     :goto_11
     return v0
 
     :cond_12
+    iget-object v0, p0, Lcom/android/server/am/MultiWindowManagerService;->mContext:Landroid/content/Context;
+
+    invoke-virtual {v0}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
+    move-result-object v0
+
+    const-string v1, "allow_all_multiwindow"
+
+    const/4 v2, 0x0
+
+    invoke-static {v0, v1, v2}, Landroid/provider/Settings$Global;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v1
+
+    if-nez v1, :cond_23
+
+    const/4 v0, 0x0
+
+    goto :goto_11
+
+    :cond_23
+    iget-object v1, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    if-nez v1, :cond_5e
+
+    .line 1414
+    new-instance v2, Ljava/util/ArrayList;
+
+    invoke-direct {v2}, Ljava/util/ArrayList;-><init>()V
+
+    iput-object v2, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    new-instance v2, Ljava/io/File;
+
+    const-string v3, "/system/etc/fbs_exclusions.txt"
+
+    invoke-direct {v2, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v2}, Ljava/io/File;->exists()Z
+
+    move-result v2
+
+    if-eqz v2, :cond_5e
+
+    .line 1415
+    :try_start_3b
+    new-instance v1, Ljava/io/BufferedReader;
+
+    new-instance v2, Ljava/io/FileReader;
+
+    const-string v3, "/system/etc/fbs_exclusions.txt"
+
+    invoke-direct {v2, v3}, Ljava/io/FileReader;-><init>(Ljava/lang/String;)V
+
+    invoke-direct {v1, v2}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
+
+    .line 1416
+    .local v1, "reader":Ljava/io/BufferedReader;
+    :cond_47
+    :goto_47
+    invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
+
+    move-result-object v2
+
+    .line 1417
+    .local v2, "pkgName":Ljava/lang/String;
+    if-eqz v2, :cond_5e
+
+    invoke-virtual {v2}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v2
+
+    invoke-virtual {v2}, Ljava/lang/String;->length()I
+
+    move-result v3
+
+    if-lez v3, :cond_47
+
+    iget-object v3, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    invoke-interface {v3, v2}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    :try_end_5c
+    .catch Ljava/lang/Exception; {:try_start_3b .. :try_end_5c} :catch_5d
+
+    goto :goto_47
+
+    .line 1418
+    .end local v1    # "reader":Ljava/io/BufferedReader;
+    .end local v2    # "pkgName":Ljava/lang/String;
+    :catch_5d
+    move-exception v3
+
+    .line 1419
+    :cond_5e
+    iget-object v1, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    invoke-interface {v1, p1}, Ljava/util/List;->contains(Ljava/lang/Object;)Z
+
+    move-result v1
+
+    if-eqz v1, :cond_10
+
     const/4 v0, 0x0
 
     goto :goto_11
@@ -7852,6 +7991,108 @@
 
     .line 1433
     :cond_8
+    iget-object v1, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    if-nez v1, :cond_43
+
+    .line 14331
+    new-instance v0, Ljava/util/ArrayList;
+
+    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
+
+    iput-object v0, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    new-instance v0, Ljava/io/File;
+
+    const-string v1, "/system/etc/fbs_exclusions.txt"
+
+    invoke-direct {v0, v1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    invoke-virtual {v0}, Ljava/io/File;->exists()Z
+
+    move-result v0
+
+    if-eqz v0, :cond_43
+
+    .line 14332
+    :try_start_20
+    new-instance v4, Ljava/io/BufferedReader;
+
+    new-instance v0, Ljava/io/FileReader;
+
+    const-string v3, "/system/etc/fbs_exclusions.txt"
+
+    invoke-direct {v0, v3}, Ljava/io/FileReader;-><init>(Ljava/lang/String;)V
+
+    invoke-direct {v4, v0}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
+
+    .line 14333
+    .local v4, "reader":Ljava/io/BufferedReader;
+    :cond_2c
+    :goto_2c
+    invoke-virtual {v4}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
+
+    move-result-object v3
+
+    .line 14334
+    .local v3, "pkgName":Ljava/lang/String;
+    if-eqz v3, :cond_43
+
+    invoke-virtual {v3}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v3
+
+    invoke-virtual {v3}, Ljava/lang/String;->length()I
+
+    move-result v1
+
+    if-lez v1, :cond_2c
+
+    iget-object v1, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    invoke-interface {v1, v3}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+    :try_end_41
+    .catch Ljava/lang/Exception; {:try_start_20 .. :try_end_41} :catch_42
+
+    goto :goto_2c
+
+    .line 14335
+    .end local v3    # "pkgName":Ljava/lang/String;
+    .end local v4    # "reader":Ljava/io/BufferedReader;
+    :catch_42
+    move-exception v0
+
+    .line 14336
+    :cond_43
+    iget-object v1, p0, Lcom/android/server/am/MultiWindowManagerService;->mFBSExclusions:Ljava/util/List;
+
+    iget-object v0, p1, Landroid/content/pm/ActivityInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
+
+    iget-object v0, v0, Landroid/content/pm/ApplicationInfo;->packageName:Ljava/lang/String;
+
+    invoke-interface {v1, v0}, Ljava/util/List;->contains(Ljava/lang/Object;)Z
+
+    move-result v1
+
+    if-nez v1, :cond_5e
+
+    iget-object v0, p0, Lcom/android/server/am/MultiWindowManagerService;->mContext:Landroid/content/Context;
+
+    invoke-virtual {v0}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
+    move-result-object v0
+
+    const-string v1, "allow_all_penwindow"
+
+    invoke-static {v0, v1, v2}, Landroid/provider/Settings$Global;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v1
+
+    if-eqz v1, :cond_5e
+
+    const/4 v2, 0x1
+
+    :cond_5e
     iget-object v3, p0, Lcom/android/server/am/MultiWindowManagerService;->mSupportScaleAppList:Ljava/util/ArrayList;
 
     iget-object v4, p1, Landroid/content/pm/ActivityInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
@@ -7862,7 +8103,7 @@
 
     move-result v3
 
-    if-nez v3, :cond_26
+    if-nez v3, :cond_7c
 
     iget-object v3, p1, Landroid/content/pm/ActivityInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
 
@@ -7883,12 +8124,12 @@
     if-eqz v3, :cond_7
 
     .line 1435
-    :cond_26
+    :cond_7c
     iget-object v3, p1, Landroid/content/pm/ActivityInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
 
     iget-object v3, v3, Landroid/content/pm/ApplicationInfo;->metaData:Landroid/os/Bundle;
 
-    if-eqz v3, :cond_4f
+    if-eqz v3, :cond_a5
 
     .line 1436
     iget-object v3, p1, Landroid/content/pm/ActivityInfo;->applicationInfo:Landroid/content/pm/ApplicationInfo;
@@ -7903,7 +8144,7 @@
 
     .line 1437
     .local v0, "applicationStyle":Ljava/lang/String;
-    if-eqz v0, :cond_4f
+    if-eqz v0, :cond_a5
 
     .line 1438
     new-instance v1, Ljava/util/ArrayList;
@@ -7933,10 +8174,10 @@
     .line 1444
     .end local v0    # "applicationStyle":Ljava/lang/String;
     .end local v1    # "applicationStyles":Ljava/util/ArrayList;, "Ljava/util/ArrayList<Ljava/lang/String;>;"
-    :cond_4f
+    :cond_a5
     const/4 v2, 0x1
 
-    goto :goto_7
+    goto/16 :goto_7
 .end method
 
 .method public launchExternalDisplay(Z)V

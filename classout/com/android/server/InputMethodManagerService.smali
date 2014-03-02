@@ -3151,6 +3151,37 @@
     return-object v4
 .end method
 
+.method private hideInputMethodNotify()Z
+    .registers 4
+
+    .prologue
+    const/4 v2, 0x0
+
+    iget-object v0, p0, Lcom/android/server/InputMethodManagerService;->mContext:Landroid/content/Context;
+
+    invoke-virtual {v0}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
+    move-result-object v0
+
+    const-string v1, "statusbar_hide_ime"
+
+    invoke-static {v0, v1, v2}, Landroid/provider/Settings$Global;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v0
+
+    if-eq v0, v2, :cond_11
+
+    const/4 v1, 0x1
+
+    :goto_10
+    return v1
+
+    :cond_11
+    const/4 v1, 0x0
+
+    goto :goto_10
+.end method
+
 .method private initializeBrightnessValue()V
     .registers 8
 
@@ -3483,32 +3514,43 @@
 
     .prologue
     .line 2063
+    invoke-direct/range {p0 .. p0}, Lcom/android/server/InputMethodManagerService;->hideInputMethodNotify()Z
+
+    move-result v13
+
+    if-eqz v13, :cond_8
+
+    const/4 v13, 0x0
+
+    goto :goto_f
+
+    :cond_8
     move-object/from16 v0, p0
 
     iget-boolean v13, v0, Lcom/android/server/InputMethodManagerService;->mShowOngoingImeSwitcherForPhones:Z
 
-    if-nez v13, :cond_8
+    if-nez v13, :cond_10
 
     const/4 v13, 0x0
 
     .line 2106
-    :goto_7
+    :goto_f
     return v13
 
     .line 2064
-    :cond_8
+    :cond_10
     invoke-direct/range {p0 .. p0}, Lcom/android/server/InputMethodManagerService;->isScreenLocked()Z
 
     move-result v13
 
-    if-eqz v13, :cond_10
+    if-eqz v13, :cond_18
 
     const/4 v13, 0x0
 
-    goto :goto_7
+    goto :goto_f
 
     .line 2065
-    :cond_10
+    :cond_18
     move-object/from16 v0, p0
 
     iget-object v14, v0, Lcom/android/server/InputMethodManagerService;->mMethodMap:Ljava/util/HashMap;
@@ -3516,7 +3558,7 @@
     monitor-enter v14
 
     .line 2066
-    :try_start_15
+    :try_start_1d
     move-object/from16 v0, p0
 
     iget-object v13, v0, Lcom/android/server/InputMethodManagerService;->mSettings:Lcom/android/internal/inputmethod/InputMethodUtils$InputMethodSettings;
@@ -3535,43 +3577,43 @@
     .local v1, "N":I
     const/4 v13, 0x2
 
-    if-le v1, v13, :cond_2a
+    if-le v1, v13, :cond_32
 
     const/4 v13, 0x1
 
     monitor-exit v14
 
-    goto :goto_7
+    goto :goto_f
 
     .line 2107
     .end local v1    # "N":I
     .end local v6    # "imis":Ljava/util/List;, "Ljava/util/List<Landroid/view/inputmethod/InputMethodInfo;>;"
-    :catchall_27
+    :catchall_2f
     move-exception v13
 
     monitor-exit v14
-    :try_end_29
-    .catchall {:try_start_15 .. :try_end_29} :catchall_27
+    :try_end_31
+    .catchall {:try_start_1d .. :try_end_31} :catchall_2f
 
     throw v13
 
     .line 2069
     .restart local v1    # "N":I
     .restart local v6    # "imis":Ljava/util/List;, "Ljava/util/List<Landroid/view/inputmethod/InputMethodInfo;>;"
-    :cond_2a
+    :cond_32
     const/4 v13, 0x1
 
-    if-ge v1, v13, :cond_30
+    if-ge v1, v13, :cond_38
 
     const/4 v13, 0x0
 
-    :try_start_2e
+    :try_start_36
     monitor-exit v14
 
-    goto :goto_7
+    goto :goto_f
 
     .line 2070
-    :cond_30
+    :cond_38
     const/4 v8, 0x0
 
     .line 2071
@@ -3591,8 +3633,8 @@
     const/4 v4, 0x0
 
     .local v4, "i":I
-    :goto_35
-    if-ge v4, v1, :cond_71
+    :goto_3d
+    if-ge v4, v1, :cond_79
 
     .line 2075
     invoke-interface {v6, v4}, Ljava/util/List;->get(I)Ljava/lang/Object;
@@ -3627,24 +3669,24 @@
 
     .line 2079
     .local v11, "subtypeCount":I
-    if-nez v11, :cond_58
+    if-nez v11, :cond_60
 
     .line 2080
     add-int/lit8 v8, v8, 0x1
 
     .line 2074
-    :cond_55
+    :cond_5d
     add-int/lit8 v4, v4, 0x1
 
-    goto :goto_35
+    goto :goto_3d
 
     .line 2082
-    :cond_58
+    :cond_60
     const/4 v7, 0x0
 
     .local v7, "j":I
-    :goto_59
-    if-ge v7, v11, :cond_55
+    :goto_61
+    if-ge v7, v11, :cond_5d
 
     .line 2083
     invoke-interface {v12, v7}, Ljava/util/List;->get(I)Ljava/lang/Object;
@@ -3659,7 +3701,7 @@
 
     move-result v13
 
-    if-nez v13, :cond_6d
+    if-nez v13, :cond_75
 
     .line 2085
     add-int/lit8 v8, v8, 0x1
@@ -3668,19 +3710,19 @@
     move-object v9, v10
 
     .line 2082
-    :goto_6a
+    :goto_72
     add-int/lit8 v7, v7, 0x1
 
-    goto :goto_59
+    goto :goto_61
 
     .line 2088
-    :cond_6d
+    :cond_75
     add-int/lit8 v2, v2, 0x1
 
     .line 2089
     move-object v3, v10
 
-    goto :goto_6a
+    goto :goto_72
 
     .line 2094
     .end local v5    # "imi":Landroid/view/inputmethod/InputMethodInfo;
@@ -3688,37 +3730,37 @@
     .end local v10    # "subtype":Landroid/view/inputmethod/InputMethodSubtype;
     .end local v11    # "subtypeCount":I
     .end local v12    # "subtypes":Ljava/util/List;, "Ljava/util/List<Landroid/view/inputmethod/InputMethodSubtype;>;"
-    :cond_71
+    :cond_79
     const/4 v13, 0x1
 
-    if-gt v8, v13, :cond_77
+    if-gt v8, v13, :cond_7f
 
     const/4 v13, 0x1
 
-    if-le v2, v13, :cond_7a
+    if-le v2, v13, :cond_82
 
     .line 2095
-    :cond_77
+    :cond_7f
     const/4 v13, 0x1
 
     monitor-exit v14
 
-    goto :goto_7
+    goto :goto_f
 
     .line 2096
-    :cond_7a
+    :cond_82
     const/4 v13, 0x1
 
-    if-ne v8, v13, :cond_ae
+    if-ne v8, v13, :cond_b6
 
     const/4 v13, 0x1
 
-    if-ne v2, v13, :cond_ae
+    if-ne v2, v13, :cond_b6
 
     .line 2097
-    if-eqz v9, :cond_aa
+    if-eqz v9, :cond_b2
 
-    if-eqz v3, :cond_aa
+    if-eqz v3, :cond_b2
 
     invoke-virtual {v9}, Landroid/view/inputmethod/InputMethodSubtype;->getLocale()Ljava/lang/String;
 
@@ -3732,53 +3774,53 @@
 
     move-result v13
 
-    if-nez v13, :cond_9e
+    if-nez v13, :cond_a6
 
     invoke-virtual {v3}, Landroid/view/inputmethod/InputMethodSubtype;->overridesImplicitlyEnabledSubtype()Z
 
     move-result v13
 
-    if-nez v13, :cond_9e
+    if-nez v13, :cond_a6
 
     invoke-virtual {v9}, Landroid/view/inputmethod/InputMethodSubtype;->overridesImplicitlyEnabledSubtype()Z
 
     move-result v13
 
-    if-eqz v13, :cond_aa
+    if-eqz v13, :cond_b2
 
-    :cond_9e
+    :cond_a6
     const-string v13, "TrySuppressingImeSwitcher"
 
     invoke-virtual {v9, v13}, Landroid/view/inputmethod/InputMethodSubtype;->containsExtraValueKey(Ljava/lang/String;)Z
 
     move-result v13
 
-    if-eqz v13, :cond_aa
+    if-eqz v13, :cond_b2
 
     .line 2102
     const/4 v13, 0x0
 
     monitor-exit v14
 
-    goto/16 :goto_7
+    goto/16 :goto_f
 
     .line 2104
-    :cond_aa
+    :cond_b2
     const/4 v13, 0x1
 
     monitor-exit v14
 
-    goto/16 :goto_7
+    goto/16 :goto_f
 
     .line 2106
-    :cond_ae
+    :cond_b6
     const/4 v13, 0x0
 
     monitor-exit v14
-    :try_end_b0
-    .catchall {:try_start_2e .. :try_end_b0} :catchall_27
+    :try_end_b8
+    .catchall {:try_start_36 .. :try_end_b8} :catchall_2f
 
-    goto/16 :goto_7
+    goto/16 :goto_f
 .end method
 
 .method private refreshImeWindowVisibilityLocked()V
@@ -13929,6 +13971,8 @@
 
     .prologue
     .line 4925
+    goto :goto_49
+
     new-instance v0, Landroid/app/AlertDialog$Builder;
 
     iget-object v1, p0, Lcom/android/server/InputMethodManagerService;->mContext:Landroid/content/Context;
@@ -13964,7 +14008,7 @@
     .line 4946
     const/4 v0, 0x2
 
-    if-ne p1, v0, :cond_49
+    if-ne p1, v0, :cond_4a
 
     .line 4947
     iget-object v0, p0, Lcom/android/server/InputMethodManagerService;->mKeyboardBuilder:Landroid/app/AlertDialog$Builder;
@@ -13974,7 +14018,7 @@
     invoke-virtual {v0, v1}, Landroid/app/AlertDialog$Builder;->setMessage(I)Landroid/app/AlertDialog$Builder;
 
     .line 4952
-    :goto_30
+    :goto_31
     iget-object v0, p0, Lcom/android/server/InputMethodManagerService;->mKeyboardBuilder:Landroid/app/AlertDialog$Builder;
 
     invoke-virtual {v0}, Landroid/app/AlertDialog$Builder;->create()Landroid/app/AlertDialog;
@@ -14000,17 +14044,18 @@
     invoke-virtual {v0}, Landroid/app/AlertDialog;->show()V
 
     .line 4957
+    :goto_49
     return-void
 
     .line 4949
-    :cond_49
+    :cond_4a
     iget-object v0, p0, Lcom/android/server/InputMethodManagerService;->mKeyboardBuilder:Landroid/app/AlertDialog$Builder;
 
     const v1, 0x104001b
 
     invoke-virtual {v0, v1}, Landroid/app/AlertDialog$Builder;->setMessage(I)Landroid/app/AlertDialog$Builder;
 
-    goto :goto_30
+    goto :goto_31
 .end method
 
 .method public showMySoftInput(Landroid/os/IBinder;I)V

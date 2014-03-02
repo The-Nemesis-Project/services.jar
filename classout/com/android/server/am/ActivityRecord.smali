@@ -1975,7 +1975,7 @@
 
     .line 707
     :cond_613
-    if-eqz v15, :cond_703
+    if-eqz v15, :cond_707
 
     .line 708
     move-object/from16 v0, p0
@@ -2197,6 +2197,8 @@
 
     move/from16 v17, v0
 
+    const/16 v17, 0x2
+
     const/16 v18, 0x2
 
     move/from16 v0, v17
@@ -2219,9 +2221,12 @@
 
     .line 688
     .local v12, "multiInstanceLaunchMode":Ljava/lang/String;
-    if-eqz v12, :cond_5fc
+    if-nez v12, :cond_6e5
+
+    const-string v12, "singleTask"
 
     .line 689
+    :cond_6e5
     if-eqz v15, :cond_5fc
 
     const-string v17, "android.intent.category.LAUNCHER"
@@ -2260,8 +2265,8 @@
 
     .line 709
     .end local v12    # "multiInstanceLaunchMode":Ljava/lang/String;
-    :cond_703
-    if-eqz v14, :cond_717
+    :cond_707
+    if-eqz v14, :cond_71b
 
     .line 710
     move-object/from16 v0, p0
@@ -2283,7 +2288,7 @@
     goto/16 :goto_627
 
     .line 713
-    :cond_717
+    :cond_71b
     const/high16 v17, 0x1000000
 
     move/from16 v0, v17

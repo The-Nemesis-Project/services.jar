@@ -128,8 +128,6 @@
 
 .field private final mHandler:Landroid/os/Handler;
 
-.field private mIQClient:Lcom/carrieriq/iqagent/client/IQClient;
-
 .field private mIntentReceiver:Landroid/content/BroadcastReceiver;
 
 .field private mInvalidCharger:I

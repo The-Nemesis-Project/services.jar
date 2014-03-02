@@ -872,7 +872,7 @@
 
     iget-object v2, p0, Lcom/android/server/power/ElectronBeam;->mSurfaceControl:Landroid/view/SurfaceControl;
 
-    invoke-direct {v0, v1, v2}, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;-><init>(Lcom/android/server/display/DisplayManagerService;Landroid/view/SurfaceControl;)V
+    invoke-direct {v0, v1, v2, p0}, Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;-><init>(Lcom/android/server/display/DisplayManagerService;Landroid/view/SurfaceControl;Lcom/android/server/power/ElectronBeam;)V
 
     iput-object v0, p0, Lcom/android/server/power/ElectronBeam;->mSurfaceLayout:Lcom/android/server/power/ElectronBeam$NaturalSurfaceLayout;
 
@@ -2130,6 +2130,16 @@
 
     .line 677
     return-void
+.end method
+
+.method public getBeamPrep()Z
+    .registers 2
+
+    .prologue
+    .line 2566
+    iget-boolean v0, p0, Lcom/android/server/power/ElectronBeam;->mPrepared:Z
+
+    return v0
 .end method
 
 .method public prepare(I)Z

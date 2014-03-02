@@ -134,16 +134,20 @@
 
     .line 119
     .local v1, "isExitedState":Z
-    if-eqz p1, :cond_32
+    const/4 v2, 0x0
 
-    if-eqz p2, :cond_32
+    if-eqz v2, :cond_35
 
-    if-eqz v1, :cond_e
+    if-eqz p1, :cond_35
 
-    if-eqz p3, :cond_32
+    if-eqz p2, :cond_35
+
+    if-eqz v1, :cond_11
+
+    if-eqz p3, :cond_35
 
     .line 122
-    :cond_e
+    :cond_11
     new-instance v0, Landroid/content/Intent;
 
     const-string v2, "diagandroid.app.ApplicationState"
@@ -162,7 +166,7 @@
     invoke-virtual {v0, v2, p2}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;
 
     .line 125
-    if-eqz v1, :cond_26
+    if-eqz v1, :cond_29
 
     .line 126
     const-string v2, "ApplicationTermReason"
@@ -170,7 +174,7 @@
     invoke-virtual {v0, v2, p3}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;
 
     .line 128
-    :cond_26
+    :cond_29
     const-string v2, "com.carrieriq.tmobile"
 
     invoke-virtual {v0, v2}, Landroid/content/Intent;->setPackage(Ljava/lang/String;)Landroid/content/Intent;
@@ -184,7 +188,7 @@
 
     .line 131
     .end local v0    # "appStateIntent":Landroid/content/Intent;
-    :cond_32
+    :cond_35
     return-void
 .end method
 

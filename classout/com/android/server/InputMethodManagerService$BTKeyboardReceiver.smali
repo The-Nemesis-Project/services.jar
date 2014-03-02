@@ -79,7 +79,7 @@
 
     move-result v3
 
-    if-eqz v3, :cond_9f
+    if-eqz v3, :cond_a0
 
     .line 820
     const-string v3, "android.bluetooth.profile.extra.STATE"
@@ -146,10 +146,10 @@
     invoke-static {v3, v4}, Landroid/util/Slog;->w(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 825
-    if-eqz v2, :cond_9f
+    if-eqz v2, :cond_a0
 
     .line 826
-    if-ne v0, v7, :cond_d6
+    if-ne v0, v7, :cond_d7
 
     .line 827
     # |= operator for: Lcom/android/server/InputMethodManagerService;->keyboardState:I
@@ -166,7 +166,7 @@
 
     move-result v3
 
-    if-eqz v3, :cond_bc
+    if-eqz v3, :cond_bd
 
     .line 831
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
@@ -192,7 +192,7 @@
 
     move-result-object v3
 
-    if-eqz v3, :cond_9f
+    if-eqz v3, :cond_a0
 
     .line 839
     # getter for: Lcom/android/server/InputMethodManagerService;->mDefaultSIP:Ljava/lang/String;
@@ -208,7 +208,9 @@
 
     move-result v3
 
-    if-nez v3, :cond_d0
+    const/4 v3, 0x1
+
+    if-nez v3, :cond_d1
 
     .line 840
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
@@ -218,8 +220,8 @@
     .line 861
     .end local v0    # "extra":I
     .end local v2    # "isKeyboard":Z
-    :cond_9f
-    :goto_9f
+    :cond_a0
+    :goto_a0
     const-string v3, "InputMethodManagerService"
 
     new-instance v4, Ljava/lang/StringBuilder;
@@ -253,7 +255,7 @@
     .line 832
     .restart local v0    # "extra":I
     .restart local v2    # "isKeyboard":Z
-    :cond_bc
+    :cond_bd
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
 
     # invokes: Lcom/android/server/InputMethodManagerService;->isChineseIMEinstalled()Z
@@ -261,7 +263,7 @@
 
     move-result v3
 
-    if-eqz v3, :cond_ca
+    if-eqz v3, :cond_cb
 
     .line 833
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
@@ -271,7 +273,7 @@
     goto :goto_7b
 
     .line 835
-    :cond_ca
+    :cond_cb
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
 
     invoke-virtual {v3}, Lcom/android/server/InputMethodManagerService;->setDefaultIMEForKeyboard()V
@@ -279,15 +281,15 @@
     goto :goto_7b
 
     .line 845
-    :cond_d0
+    :cond_d1
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
 
     invoke-virtual {v3}, Lcom/android/server/InputMethodManagerService;->showtoastkeyboardconnected()V
 
-    goto :goto_9f
+    goto :goto_a0
 
     .line 851
-    :cond_d6
+    :cond_d7
     const/4 v3, -0x3
 
     # &= operator for: Lcom/android/server/InputMethodManagerService;->keyboardState:I
@@ -301,7 +303,7 @@
 
     const/4 v4, 0x1
 
-    if-ne v3, v4, :cond_ee
+    if-ne v3, v4, :cond_ef
 
     .line 854
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
@@ -318,7 +320,7 @@
     invoke-static {v3, v4, v5}, Landroid/provider/Settings$System;->putInt(Landroid/content/ContentResolver;Ljava/lang/String;I)Z
 
     .line 856
-    :cond_ee
+    :cond_ef
     iget-object v3, p0, Lcom/android/server/InputMethodManagerService$BTKeyboardReceiver;->this$0:Lcom/android/server/InputMethodManagerService;
 
     invoke-virtual {v3}, Lcom/android/server/InputMethodManagerService;->hideKeyboardDialog()V
@@ -327,5 +329,5 @@
     # setter for: Lcom/android/server/InputMethodManagerService;->prevAutoMode:I
     invoke-static {v6}, Lcom/android/server/InputMethodManagerService;->access$702(I)I
 
-    goto :goto_9f
+    goto :goto_a0
 .end method

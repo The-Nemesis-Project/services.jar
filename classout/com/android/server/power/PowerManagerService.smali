@@ -3373,7 +3373,13 @@
 
     const/4 v2, 0x5
 
-    if-gt v1, v2, :cond_29
+    if-gt v1, v2, :cond_2f
+
+    invoke-direct {p0}, Lcom/android/server/power/PowerManagerService;->stopLowPowerDim()Z
+
+    move-result v1
+
+    if-nez v1, :cond_2f
 
     iget-object v1, p0, Lcom/android/server/power/PowerManagerService;->mBatteryService:Lcom/android/server/BatteryService;
 
@@ -3386,7 +3392,7 @@
     if-eqz v1, :cond_6
 
     .line 3341
-    :cond_29
+    :cond_2f
     const/4 v0, 0x2
 
     goto :goto_6
@@ -3568,6 +3574,28 @@
     .line 2440
     :cond_63
     return v0
+.end method
+
+.method private getUSBWakePlug()Z
+    .registers 4
+
+    .prologue
+    const/4 v2, 0x0
+
+    .line 4078
+    iget-object v0, p0, Lcom/android/server/power/PowerManagerService;->mContext:Landroid/content/Context;
+
+    invoke-virtual {v0}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
+    move-result-object v0
+
+    const-string v1, "usbplugwake"
+
+    invoke-static {v0, v1, v2}, Landroid/provider/Settings$Global;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v1
+
+    return v1
 .end method
 
 .method private goToSleepFromNative(JI)V
@@ -8691,62 +8719,68 @@
     const/4 v0, 0x0
 
     .line 2114
+    invoke-direct {p0}, Lcom/android/server/power/PowerManagerService;->getUSBWakePlug()Z
+
+    move-result v1
+
+    if-nez v1, :cond_c
+
     iget-boolean v1, p0, Lcom/android/server/power/PowerManagerService;->mWakeUpWhenPluggedOrUnpluggedConfig:Z
 
-    if-nez v1, :cond_7
+    if-nez v1, :cond_d
 
     .line 2140
-    :cond_6
-    :goto_6
+    :cond_c
+    :goto_c
     return v0
 
     .line 2120
-    :cond_7
-    if-eqz p1, :cond_f
+    :cond_d
+    if-eqz p1, :cond_15
 
     iget-boolean v1, p0, Lcom/android/server/power/PowerManagerService;->mIsPowered:Z
 
-    if-nez v1, :cond_f
+    if-nez v1, :cond_15
 
-    if-eq p2, v2, :cond_6
+    if-eq p2, v2, :cond_c
 
     .line 2127
-    :cond_f
-    if-nez p1, :cond_1b
+    :cond_15
+    if-nez p1, :cond_21
 
     iget-boolean v1, p0, Lcom/android/server/power/PowerManagerService;->mIsPowered:Z
 
-    if-eqz v1, :cond_1b
+    if-eqz v1, :cond_21
 
     iget v1, p0, Lcom/android/server/power/PowerManagerService;->mPlugType:I
 
-    if-ne v1, v2, :cond_1b
+    if-ne v1, v2, :cond_21
 
-    if-eqz p3, :cond_6
+    if-eqz p3, :cond_c
 
     .line 2134
-    :cond_1b
+    :cond_21
     iget-boolean v1, p0, Lcom/android/server/power/PowerManagerService;->mIsPowered:Z
 
-    if-eqz v1, :cond_29
+    if-eqz v1, :cond_2f
 
     iget v1, p0, Lcom/android/server/power/PowerManagerService;->mWakefulness:I
 
     const/4 v2, 0x2
 
-    if-eq v1, v2, :cond_6
+    if-eq v1, v2, :cond_c
 
     iget v1, p0, Lcom/android/server/power/PowerManagerService;->mWakefulness:I
 
     const/4 v2, 0x3
 
-    if-eq v1, v2, :cond_6
+    if-eq v1, v2, :cond_c
 
     .line 2140
-    :cond_29
+    :cond_2f
     const/4 v0, 0x1
 
-    goto :goto_6
+    goto :goto_c
 .end method
 
 .method private shutdownOrRebootInternal(ZZLjava/lang/String;Z)V
@@ -9036,6 +9070,28 @@
 
     .line 3481
     return-void
+.end method
+
+.method private stopLowPowerDim()Z
+    .registers 4
+
+    .prologue
+    const/4 v2, 0x0
+
+    .line 4076
+    iget-object v0, p0, Lcom/android/server/power/PowerManagerService;->mContext:Landroid/content/Context;
+
+    invoke-virtual {v0}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
+    move-result-object v0
+
+    const-string v1, "staylitscreen"
+
+    invoke-static {v0, v1, v2}, Landroid/provider/Settings$Global;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v1
+
+    return v1
 .end method
 
 .method private updateAutoPowerOffTimeLocked(JI)V
@@ -9986,7 +10042,7 @@
     .line 2040
     and-int/lit16 v0, p1, 0x100
 
-    if-eqz v0, :cond_c1
+    if-eqz v0, :cond_c7
 
     .line 2041
     iget-boolean v10, p0, Lcom/android/server/power/PowerManagerService;->mIsPowered:Z
@@ -10032,7 +10088,7 @@
 
     iget v0, p0, Lcom/android/server/power/PowerManagerService;->mPlugType:I
 
-    if-eq v9, v0, :cond_c1
+    if-eq v9, v0, :cond_c7
 
     .line 2057
     :cond_2a
@@ -10094,13 +10150,19 @@
 
     .line 2074
     .local v6, "dockedOnWirelessCharger":Z
-    if-nez v10, :cond_85
+    if-nez v10, :cond_8b
+
+    invoke-direct {p0}, Lcom/android/server/power/PowerManagerService;->getUSBWakePlug()Z
+
+    move-result v0
+
+    if-nez v0, :cond_8b
 
     iget-object v0, p0, Lcom/android/server/power/PowerManagerService;->mDisplayPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget v0, v0, Lcom/android/server/power/DisplayPowerRequest;->screenState:I
 
-    if-nez v0, :cond_85
+    if-nez v0, :cond_8b
 
     .line 2075
     iget-object v0, p0, Lcom/android/server/power/PowerManagerService;->mContext:Landroid/content/Context;
@@ -10135,7 +10197,7 @@
     .line 2084
     .end local v7    # "mChargeScreen":Landroid/os/PowerManager$WakeLock;
     .end local v8    # "mPowerManager":Landroid/os/PowerManager;
-    :cond_85
+    :cond_8b
     invoke-static {}, Landroid/os/SystemClock;->uptimeMillis()J
 
     move-result-wide v1
@@ -10144,7 +10206,7 @@
     .local v1, "now":J
     iget v0, p0, Lcom/android/server/power/PowerManagerService;->mAutoPowerOffTimeoutSetting:I
 
-    if-lez v0, :cond_93
+    if-lez v0, :cond_99
 
     .line 2087
     invoke-direct {p0, v1, v2}, Lcom/android/server/power/PowerManagerService;->resetAutoPowerOffTimerNoUpdateLocked(J)Z
@@ -10155,12 +10217,12 @@
     iput-boolean v0, p0, Lcom/android/server/power/PowerManagerService;->mPowerIsChanged:Z
 
     .line 2092
-    :cond_93
+    :cond_99
     invoke-direct {p0, v10, v9, v6}, Lcom/android/server/power/PowerManagerService;->shouldWakeUpWhenPluggedOrUnpluggedLocked(ZIZ)Z
 
     move-result v0
 
-    if-eqz v0, :cond_b3
+    if-eqz v0, :cond_b9
 
     .line 2095
     new-instance v0, Ljava/lang/StringBuilder;
@@ -10189,7 +10251,7 @@
     invoke-direct {p0, v1, v2}, Lcom/android/server/power/PowerManagerService;->wakeUpNoUpdateLocked(J)Z
 
     .line 2099
-    :cond_b3
+    :cond_b9
     const/16 v5, 0x3e8
 
     move-object v0, p0
@@ -10199,7 +10261,7 @@
     invoke-direct/range {v0 .. v5}, Lcom/android/server/power/PowerManagerService;->userActivityNoUpdateLocked(JIII)Z
 
     .line 2104
-    if-eqz v6, :cond_c1
+    if-eqz v6, :cond_c7
 
     .line 2105
     iget-object v0, p0, Lcom/android/server/power/PowerManagerService;->mNotifier:Lcom/android/server/power/Notifier;
@@ -10211,7 +10273,7 @@
     .end local v6    # "dockedOnWirelessCharger":Z
     .end local v9    # "oldPlugType":I
     .end local v10    # "wasPowered":Z
-    :cond_c1
+    :cond_c7
     return-void
 .end method
 

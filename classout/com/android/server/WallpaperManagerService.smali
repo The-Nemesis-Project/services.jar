@@ -408,6 +408,17 @@
     return v0
 .end method
 
+.method static synthetic access$501(Lcom/android/server/WallpaperManagerService;)Landroid/content/Context;
+    .registers 2
+    .param p0, "x0"    # Lcom/android/server/WallpaperManagerService;
+
+    .prologue
+    .line 112
+    iget-object v0, p0, Lcom/android/server/WallpaperManagerService;->mContext:Landroid/content/Context;
+
+    return-object v0
+.end method
+
 .method private checkPermission(Ljava/lang/String;)V
     .registers 5
     .param p1, "permission"    # Ljava/lang/String;

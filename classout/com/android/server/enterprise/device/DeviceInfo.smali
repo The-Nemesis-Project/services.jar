@@ -4942,9 +4942,9 @@
     .local v1, "rooted":Z
     iget-object v2, p0, Lcom/android/server/enterprise/device/DeviceInfo;->mSysScopeService:Landroid/app/enterprise/IEnterpriseSysScopeInterface;
     :try_end_7
-    .catchall {:try_start_1 .. :try_end_7} :catchall_2d
+    .catchall {:try_start_1 .. :try_end_7} :catchall_2e
 
-    if-eqz v2, :cond_1b
+    if-eqz v2, :cond_1c
 
     .line 1406
     :try_start_9
@@ -4952,8 +4952,8 @@
 
     invoke-interface {v2}, Landroid/app/enterprise/IEnterpriseSysScopeInterface;->isDeviceRooted()Z
     :try_end_e
-    .catch Landroid/os/RemoteException; {:try_start_9 .. :try_end_e} :catch_11
-    .catchall {:try_start_9 .. :try_end_e} :catchall_2d
+    .catch Landroid/os/RemoteException; {:try_start_9 .. :try_end_e} :catch_12
+    .catchall {:try_start_9 .. :try_end_e} :catchall_2e
 
     move-result v1
 
@@ -4961,15 +4961,17 @@
     :goto_f
     monitor-exit p0
 
+    const/4 v1, 0x0
+
     return v1
 
     .line 1407
-    :catch_11
+    :catch_12
     move-exception v0
 
     .line 1408
     .local v0, "e":Landroid/os/RemoteException;
-    :try_start_12
+    :try_start_13
     const-string v2, "DeviceInfo"
 
     const-string v3, "isDeviceRooted(): error"
@@ -4984,7 +4986,7 @@
 
     .line 1413
     .end local v0    # "e":Landroid/os/RemoteException;
-    :cond_1b
+    :cond_1c
     const-string v2, "DeviceInfo"
 
     const-string v3, "isDeviceRooted(): not found"
@@ -5002,14 +5004,14 @@
     const-wide/16 v4, 0x3e8
 
     invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-    :try_end_2c
-    .catchall {:try_start_12 .. :try_end_2c} :catchall_2d
+    :try_end_2d
+    .catchall {:try_start_13 .. :try_end_2d} :catchall_2e
 
     goto :goto_f
 
     .line 1402
     .end local v1    # "rooted":Z
-    :catchall_2d
+    :catchall_2e
     move-exception v2
 
     monitor-exit p0

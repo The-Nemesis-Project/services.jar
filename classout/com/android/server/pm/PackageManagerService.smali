@@ -7236,11 +7236,121 @@
 .end method
 
 .method static compareSignatures([Landroid/content/pm/Signature;[Landroid/content/pm/Signature;)I
-.locals 7
+    .registers 9
+    .param p0, "s1"    # [Landroid/content/pm/Signature;
+    .param p1, "s2"    # [Landroid/content/pm/Signature;
 
-const/4 v0, 0x0
+    .prologue
+    .line 3816
+    const/4 v6, 0x0
 
-return v0
+    goto :goto_7
+
+    if-nez p0, :cond_a
+
+    .line 3817
+    if-nez p1, :cond_8
+
+    const/4 v6, 0x1
+
+    .line 3836
+    :goto_7
+    return v6
+
+    .line 3817
+    :cond_8
+    const/4 v6, -0x1
+
+    goto :goto_7
+
+    .line 3821
+    :cond_a
+    if-nez p1, :cond_e
+
+    .line 3822
+    const/4 v6, -0x2
+
+    goto :goto_7
+
+    .line 3824
+    :cond_e
+    new-instance v3, Ljava/util/HashSet;
+
+    invoke-direct {v3}, Ljava/util/HashSet;-><init>()V
+
+    .line 3825
+    .local v3, "set1":Ljava/util/HashSet;, "Ljava/util/HashSet<Landroid/content/pm/Signature;>;"
+    move-object v0, p0
+
+    .local v0, "arr$":[Landroid/content/pm/Signature;
+    array-length v2, v0
+
+    .local v2, "len$":I
+    const/4 v1, 0x0
+
+    .local v1, "i$":I
+    :goto_16
+    if-ge v1, v2, :cond_20
+
+    aget-object v5, v0, v1
+
+    .line 3826
+    .local v5, "sig":Landroid/content/pm/Signature;
+    invoke-virtual {v3, v5}, Ljava/util/HashSet;->add(Ljava/lang/Object;)Z
+
+    .line 3825
+    add-int/lit8 v1, v1, 0x1
+
+    goto :goto_16
+
+    .line 3828
+    .end local v5    # "sig":Landroid/content/pm/Signature;
+    :cond_20
+    new-instance v4, Ljava/util/HashSet;
+
+    invoke-direct {v4}, Ljava/util/HashSet;-><init>()V
+
+    .line 3829
+    .local v4, "set2":Ljava/util/HashSet;, "Ljava/util/HashSet<Landroid/content/pm/Signature;>;"
+    move-object v0, p1
+
+    array-length v2, v0
+
+    const/4 v1, 0x0
+
+    :goto_28
+    if-ge v1, v2, :cond_32
+
+    aget-object v5, v0, v1
+
+    .line 3830
+    .restart local v5    # "sig":Landroid/content/pm/Signature;
+    invoke-virtual {v4, v5}, Ljava/util/HashSet;->add(Ljava/lang/Object;)Z
+
+    .line 3829
+    add-int/lit8 v1, v1, 0x1
+
+    goto :goto_28
+
+    .line 3833
+    .end local v5    # "sig":Landroid/content/pm/Signature;
+    :cond_32
+    invoke-virtual {v3, v4}, Ljava/util/HashSet;->equals(Ljava/lang/Object;)Z
+
+    move-result v6
+
+    if-eqz v6, :cond_3a
+
+    .line 3834
+    const/4 v6, 0x0
+
+    goto :goto_7
+
+    .line 3836
+    :cond_3a
+    const/4 v6, -0x3
+
+    goto :goto_7
 .end method
 
 .method static compareStrings(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Z

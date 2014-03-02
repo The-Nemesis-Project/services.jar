@@ -2,6 +2,9 @@
 .super Ljava/lang/Object;
 .source "DisplayPowerController.java"
 
+# interfaces
+.implements Landroid/animation/Animator$AnimatorListener;
+
 
 # annotations
 .annotation system Ldalvik/annotation/MemberClasses;
@@ -131,6 +134,8 @@
 
 .field private final mCleanListener:Ljava/lang/Runnable;
 
+.field private final mContext:Landroid/content/Context;
+
 .field private mDebounceLuxDirection:I
 
 .field private mDebounceLuxTime:J
@@ -144,6 +149,14 @@
 .field private mDynamicAutoBrightnessEnabled:Z
 
 .field private mElectronBeamFadesConfig:Z
+
+.field private mElectronBeamOff:I
+
+.field private mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+.field private mElectronBeamOn:I
+
+.field private mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
 
 .field private final mEnablePrintDynamicAutoBrightnessSpecTable:Z
 
@@ -579,6 +592,8 @@
     iput-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mHandler:Lcom/android/server/power/DisplayPowerController$DisplayControllerHandler;
 
     .line 410
+    iput-object p2, p0, Lcom/android/server/power/DisplayPowerController;->mContext:Landroid/content/Context;
+
     iput-object p3, p0, Lcom/android/server/power/DisplayPowerController;->mNotifier:Lcom/android/server/power/Notifier;
 
     .line 411
@@ -685,7 +700,7 @@
     .line 442
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mUseSoftwareAutoBrightnessConfig:Z
 
-    if-eqz v6, :cond_1e0
+    if-eqz v6, :cond_1e2
 
     .line 443
     const v6, 0x111002b
@@ -699,7 +714,7 @@
     .line 448
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mDynamicAutoBrightnessEnabled:Z
 
-    if-eqz v6, :cond_26d
+    if-eqz v6, :cond_26f
 
     .line 449
     const-string v6, "DisplayPowerController"
@@ -903,15 +918,15 @@
     move-result v2
 
     .line 496
-    if-ge v2, v5, :cond_1d7
+    if-ge v2, v5, :cond_1d9
 
     .line 497
     move v5, v2
 
     .line 523
     .end local v2    # "minAutoBrightness":I
-    :cond_1d7
-    :goto_1d7
+    :cond_1d9
+    :goto_1d9
     const v6, 0x10e002f
 
     invoke-virtual {v3, v6}, Landroid/content/res/Resources;->getInteger(I)I
@@ -921,7 +936,7 @@
     iput v6, p0, Lcom/android/server/power/DisplayPowerController;->mLightSensorWarmUpTimeConfig:I
 
     .line 527
-    :cond_1e0
+    :cond_1e2
     const v6, 0x111005e
 
     invoke-virtual {v3, v6}, Landroid/content/res/Resources;->getBoolean(I)Z
@@ -933,7 +948,7 @@
     .line 529
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mUseButtonAutoBrightnessConfig:Z
 
-    if-eqz v6, :cond_1fc
+    if-eqz v6, :cond_1fe
 
     .line 530
     const/4 v6, 0x1
@@ -955,7 +970,7 @@
     iput v6, p0, Lcom/android/server/power/DisplayPowerController;->mButtonLastValue:I
 
     .line 535
-    :cond_1fc
+    :cond_1fe
     const v6, 0x111005f
 
     invoke-virtual {v3, v6}, Landroid/content/res/Resources;->getBoolean(I)Z
@@ -967,14 +982,14 @@
     .line 537
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mUseButtonAutoBrightnessConfig:Z
 
-    if-nez v6, :cond_20d
+    if-nez v6, :cond_20f
 
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mUseButtonLedBrightnessConfig:Z
 
-    if-eqz v6, :cond_216
+    if-eqz v6, :cond_218
 
     .line 538
-    :cond_20d
+    :cond_20f
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mLights:Lcom/android/server/LightsService;
 
     const/4 v7, 0x2
@@ -986,7 +1001,7 @@
     iput-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mButtonLight:Lcom/android/server/LightsService$Light;
 
     .line 541
-    :cond_216
+    :cond_218
     invoke-static {v5}, Lcom/android/server/power/DisplayPowerController;->clampAbsoluteBrightness(I)I
 
     move-result v6
@@ -1021,7 +1036,7 @@
     .line 549
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximitySensor:Landroid/hardware/Sensor;
 
-    if-eqz v6, :cond_245
+    if-eqz v6, :cond_247
 
     .line 550
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximitySensor:Landroid/hardware/Sensor;
@@ -1039,10 +1054,10 @@
     iput v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximityThreshold:F
 
     .line 555
-    :cond_245
+    :cond_247
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mUseSoftwareAutoBrightnessConfig:Z
 
-    if-eqz v6, :cond_25b
+    if-eqz v6, :cond_25d
 
     .line 557
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mSensorManager:Landroid/hardware/SensorManager;
@@ -1067,14 +1082,14 @@
     iput-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mTiltSensor:Landroid/hardware/Sensor;
 
     .line 563
-    :cond_25b
+    :cond_25d
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mUseSoftwareAutoBrightnessConfig:Z
 
-    if-eqz v6, :cond_26c
+    if-eqz v6, :cond_26e
 
     sget-boolean v6, Lcom/android/server/power/DisplayPowerController;->USE_TWILIGHT_ADJUSTMENT:Z
 
-    if-eqz v6, :cond_26c
+    if-eqz v6, :cond_26e
 
     .line 564
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mTwilight:Lcom/android/server/TwilightService;
@@ -1086,11 +1101,11 @@
     invoke-virtual {v6, v7, v8}, Lcom/android/server/TwilightService;->registerListener(Lcom/android/server/TwilightService$TwilightListener;Landroid/os/Handler;)V
 
     .line 566
-    :cond_26c
+    :cond_26e
     return-void
 
     .line 502
-    :cond_26d
+    :cond_26f
     const v6, 0x107002e
 
     invoke-virtual {v3, v6}, Landroid/content/res/Resources;->getIntArray(I)[I
@@ -1116,7 +1131,7 @@
     .line 508
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenAutoBrightnessSpline:Landroid/util/Spline;
 
-    if-nez v6, :cond_2cc
+    if-nez v6, :cond_2ce
 
     .line 509
     const-string v6, "DisplayPowerController"
@@ -1190,22 +1205,22 @@
 
     iput-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mUseSoftwareAutoBrightnessConfig:Z
 
-    goto/16 :goto_1d7
+    goto/16 :goto_1d9
 
     .line 517
-    :cond_2cc
+    :cond_2ce
     const/4 v6, 0x0
 
     aget v6, v4, v6
 
-    if-ge v6, v5, :cond_1d7
+    if-ge v6, v5, :cond_1d9
 
     .line 518
     const/4 v6, 0x0
 
     aget v5, v4, v6
 
-    goto/16 :goto_1d7
+    goto/16 :goto_1d9
 .end method
 
 .method static synthetic access$000(Lcom/android/server/power/DisplayPowerController;)Z
@@ -5027,6 +5042,83 @@
     goto :goto_31
 .end method
 
+.method private getRotated()Z
+    .registers 3
+
+    .prologue
+    .line 8000
+    iget-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mDisplayManager:Lcom/android/server/display/DisplayManagerService;
+
+    const/4 v1, 0x0
+
+    invoke-virtual {v0, v1}, Lcom/android/server/display/DisplayManagerService;->getDisplayInfo(I)Landroid/view/DisplayInfo;
+
+    move-result-object v0
+
+    iget v1, v0, Landroid/view/DisplayInfo;->rotation:I
+
+    if-eqz v1, :cond_d
+
+    const/4 v1, 0x1
+
+    :goto_c
+    return v1
+
+    :cond_d
+    const/4 v1, 0x0
+
+    goto :goto_c
+.end method
+
+.method private getScreenAnimationModes(Landroid/content/Context;)V
+    .registers 5
+    .param p1, "context"    # Landroid/content/Context;
+
+    .prologue
+    const/4 v0, 0x0
+
+    invoke-virtual {p1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
+    move-result-object v1
+
+    const-string v2, "crtenable"
+
+    invoke-static {v1, v2, v0}, Landroid/provider/Settings$Global;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v2
+
+    if-eqz v2, :cond_16
+
+    const/4 v1, 0x1
+
+    if-eq v1, v2, :cond_1b
+
+    const/4 v1, 0x2
+
+    iput v1, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOn:I
+
+    iput v1, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOff:I
+
+    :goto_15
+    return-void
+
+    :cond_16
+    iput v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOn:I
+
+    iput v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOff:I
+
+    goto :goto_15
+
+    :cond_1b
+    const/4 v1, 0x1
+
+    iput v1, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOn:I
+
+    iput v1, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOff:I
+
+    goto :goto_15
+.end method
+
 .method private getSlope(IIIIZ)D
     .registers 16
     .param p1, "ax"    # I
@@ -5752,6 +5844,62 @@
     iput-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
 
     .line 725
+    const v4, 0x2
+
+    iget-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    sget-object v1, Lcom/android/server/power/DisplayPowerState;->ELECTRON_BEAM_LEVEL:Landroid/util/FloatProperty;
+
+    new-array v2, v4, [F
+
+    fill-array-data v2, :array_5e
+
+    invoke-static {v0, v1, v2}, Landroid/animation/ObjectAnimator;->ofFloat(Ljava/lang/Object;Landroid/util/Property;[F)Landroid/animation/ObjectAnimator;
+
+    move-result-object v0
+
+    iput-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    .line 7251
+    iget-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    const-wide/16 v1, 0xfa
+
+    invoke-virtual {v0, v1, v2}, Landroid/animation/ObjectAnimator;->setDuration(J)Landroid/animation/ObjectAnimator;
+
+    .line 7252
+    iget-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v0, p0}, Landroid/animation/ObjectAnimator;->addListener(Landroid/animation/Animator$AnimatorListener;)V
+
+    .line 7253
+    iget-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    sget-object v1, Lcom/android/server/power/DisplayPowerState;->ELECTRON_BEAM_LEVEL:Landroid/util/FloatProperty;
+
+    new-array v2, v4, [F
+
+    fill-array-data v2, :array_66
+
+    invoke-static {v0, v1, v2}, Landroid/animation/ObjectAnimator;->ofFloat(Ljava/lang/Object;Landroid/util/Property;[F)Landroid/animation/ObjectAnimator;
+
+    move-result-object v0
+
+    iput-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    .line 7254
+    iget-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    const-wide/16 v1, 0x190
+
+    invoke-virtual {v0, v1, v2}, Landroid/animation/ObjectAnimator;->setDuration(J)Landroid/animation/ObjectAnimator;
+
+    .line 7255
+    iget-object v0, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v0, p0}, Landroid/animation/ObjectAnimator;->addListener(Landroid/animation/Animator$AnimatorListener;)V
+
+    .line 726
     new-instance v0, Lcom/android/server/power/RampAnimator;
 
     iget-object v1, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
@@ -5764,6 +5912,22 @@
 
     .line 727
     return-void
+
+    nop
+
+    nop
+
+    :array_5e
+    .array-data 4
+        0x0
+        0x3f800000
+    .end array-data
+
+    :array_66
+    .array-data 4
+        0x3f800000
+        0x0
+    .end array-data
 .end method
 
 .method private isTablet()Z
@@ -8351,9 +8515,13 @@
 
     .line 763
     :cond_14
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mContext:Landroid/content/Context;
+
+    invoke-direct {p0, v6}, Lcom/android/server/power/DisplayPowerController;->getScreenAnimationModes(Landroid/content/Context;)V
+
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
-    if-nez v6, :cond_11c
+    if-nez v6, :cond_144
 
     .line 764
     new-instance v6, Lcom/android/server/power/DisplayPowerRequest;
@@ -8393,53 +8561,53 @@
     const/4 v0, 0x1
 
     .line 797
-    :cond_33
-    :goto_33
+    :cond_38
+    :goto_38
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mDisplayReadyLocked:Z
 
-    if-nez v6, :cond_183
+    if-nez v6, :cond_1ab
 
     move v1, v7
 
     .line 798
     .local v1, "mustNotify":Z
-    :goto_38
+    :goto_3d
     monitor-exit v9
-    :try_end_39
-    .catchall {:try_start_c .. :try_end_39} :catchall_17e
+    :try_end_3e
+    .catchall {:try_start_c .. :try_end_3e} :catchall_1a6
 
     .line 801
-    if-eqz v0, :cond_3e
+    if-eqz v0, :cond_43
 
     .line 802
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->initialize()V
 
     .line 838
-    :cond_3e
+    :cond_43
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mWaitProximityToggled:Z
 
-    if-nez v6, :cond_4c
+    if-nez v6, :cond_51
 
     iget v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximity:I
 
-    if-ne v6, v7, :cond_4c
+    if-ne v6, v7, :cond_51
 
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnEvenThoughProximityPositive:Z
 
-    if-eqz v6, :cond_4c
+    if-eqz v6, :cond_51
 
     .line 839
     iput-boolean v7, p0, Lcom/android/server/power/DisplayPowerController;->mWaitProximityToggled:Z
 
     .line 841
-    :cond_4c
+    :cond_51
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mWaitProximityToggled:Z
 
-    if-eqz v6, :cond_58
+    if-eqz v6, :cond_5d
 
     iget v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximity:I
 
-    if-nez v6, :cond_58
+    if-nez v6, :cond_5d
 
     .line 842
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnEvenThoughProximityPositive:Z
@@ -8448,22 +8616,22 @@
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mWaitProximityToggled:Z
 
     .line 845
-    :cond_58
+    :cond_5d
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximitySensor:Landroid/hardware/Sensor;
 
-    if-eqz v6, :cond_200
+    if-eqz v6, :cond_228
 
     .line 846
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget-boolean v6, v6, Lcom/android/server/power/DisplayPowerRequest;->useProximitySensor:Z
 
-    if-eqz v6, :cond_1ca
+    if-eqz v6, :cond_1f2
 
     .line 848
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
 
-    if-nez v6, :cond_186
+    if-nez v6, :cond_1ae
 
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
@@ -8473,13 +8641,13 @@
 
     move-result v6
 
-    if-nez v6, :cond_186
+    if-nez v6, :cond_1ae
 
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget v6, v6, Lcom/android/server/power/DisplayPowerRequest;->lastGoToSleepReason:I
 
-    if-nez v6, :cond_186
+    if-nez v6, :cond_1ae
 
     .line 852
     invoke-direct {p0, v8}, Lcom/android/server/power/DisplayPowerController;->setProximitySensorEnabled(Z)V
@@ -8488,22 +8656,22 @@
     invoke-direct {p0, v8}, Lcom/android/server/power/DisplayPowerController;->setScreenOn(Z)V
 
     .line 913
-    :cond_7c
-    :goto_7c
+    :cond_81
+    :goto_81
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mLightSensor:Landroid/hardware/Sensor;
 
-    if-eqz v6, :cond_98
+    if-eqz v6, :cond_9d
 
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mTiltSensor:Landroid/hardware/Sensor;
 
-    if-eqz v6, :cond_98
+    if-eqz v6, :cond_9d
 
     .line 914
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget-boolean v6, v6, Lcom/android/server/power/DisplayPowerRequest;->useAutoBrightness:Z
 
-    if-eqz v6, :cond_204
+    if-eqz v6, :cond_22c
 
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
@@ -8513,15 +8681,15 @@
 
     move-result v6
 
-    if-eqz v6, :cond_204
+    if-eqz v6, :cond_22c
 
     move v6, v7
 
-    :goto_95
+    :goto_9a
     invoke-direct {p0, v6, v4}, Lcom/android/server/power/DisplayPowerController;->setLightSensorEnabled(ZZ)V
 
     .line 919
-    :cond_98
+    :cond_9d
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget v6, v6, Lcom/android/server/power/DisplayPowerRequest;->screenState:I
@@ -8530,16 +8698,16 @@
 
     move-result v6
 
-    if-eqz v6, :cond_219
+    if-eqz v6, :cond_241
 
     .line 922
     iget v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenAutoBrightness:I
 
-    if-ltz v6, :cond_207
+    if-ltz v6, :cond_22f
 
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mLightSensorEnabled:Z
 
-    if-eqz v6, :cond_207
+    if-eqz v6, :cond_22f
 
     .line 924
     iget v3, p0, Lcom/android/server/power/DisplayPowerController;->mScreenAutoBrightness:I
@@ -8553,20 +8721,20 @@
     iput-boolean v7, p0, Lcom/android/server/power/DisplayPowerController;->mUsingScreenAutoBrightness:Z
 
     .line 937
-    :goto_b0
+    :goto_b5
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget v6, v6, Lcom/android/server/power/DisplayPowerRequest;->screenState:I
 
     const/4 v9, 0x2
 
-    if-ne v6, v9, :cond_b9
+    if-ne v6, v9, :cond_be
 
     .line 938
     iput v3, p0, Lcom/android/server/power/DisplayPowerController;->mScreenBrightnessOnCover:I
 
     .line 942
-    :cond_b9
+    :cond_be
     invoke-direct {p0, v3}, Lcom/android/server/power/DisplayPowerController;->getFinalBrightness(I)I
 
     move-result v3
@@ -8576,7 +8744,7 @@
 
     iget v6, v6, Lcom/android/server/power/DisplayPowerRequest;->screenState:I
 
-    if-ne v6, v7, :cond_210
+    if-ne v6, v7, :cond_238
 
     .line 947
     add-int/lit8 v6, v3, -0xa
@@ -8591,26 +8759,26 @@
     const/4 v2, 0x0
 
     .line 954
-    :cond_cc
-    :goto_cc
+    :cond_d1
+    :goto_d1
     invoke-direct {p0, v3}, Lcom/android/server/power/DisplayPowerController;->clampScreenBrightness(I)I
 
     move-result v9
 
-    if-eqz v2, :cond_215
+    if-eqz v2, :cond_23d
 
     const/16 v6, 0x1f4
 
-    :goto_d4
+    :goto_d9
     invoke-direct {p0, v9, v6}, Lcom/android/server/power/DisplayPowerController;->animateScreenBrightness(II)V
 
     .line 962
     .end local v2    # "slow":Z
     .end local v3    # "target":I
-    :goto_d7
+    :goto_dc
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
 
-    if-nez v6, :cond_f1
+    if-nez v6, :cond_109
 
     .line 963
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
@@ -8621,7 +8789,15 @@
 
     move-result v6
 
-    if-eqz v6, :cond_222
+    if-eqz v6, :cond_297
+
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->isStarted()Z
+
+    move-result v6
+
+    if-nez v6, :cond_109
 
     .line 964
     invoke-direct {p0, v7}, Lcom/android/server/power/DisplayPowerController;->setScreenOn(Z)V
@@ -8631,17 +8807,45 @@
 
     iget-boolean v6, v6, Lcom/android/server/power/DisplayPowerRequest;->blockScreenOn:Z
 
-    if-eqz v6, :cond_21d
+    if-eqz v6, :cond_245
+
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    invoke-virtual {v6}, Lcom/android/server/power/DisplayPowerState;->getElectronBeamLevel()F
+
+    move-result v6
+
+    const/4 v10, 0x0
+
+    cmpl-float v6, v6, v10
+
+    if-nez v6, :cond_245
 
     .line 966
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->blockScreenOn()V
 
     .line 1043
-    :cond_f1
-    :goto_f1
+    :cond_109
+    :goto_109
     if-eqz v1, :cond_13
 
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnWasBlocked:Z
+
+    if-nez v6, :cond_13
+
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->isStarted()Z
+
+    move-result v6
+
+    if-nez v6, :cond_13
+
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->isStarted()Z
+
+    move-result v6
 
     if-nez v6, :cond_13
 
@@ -8661,10 +8865,10 @@
     monitor-enter v7
 
     .line 1053
-    :try_start_104
+    :try_start_12c
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mPendingRequestChangedLocked:Z
 
-    if-nez v6, :cond_116
+    if-nez v6, :cond_13e
 
     .line 1054
     const/4 v6, 0x1
@@ -8674,7 +8878,7 @@
     .line 1056
     sget-boolean v6, Lcom/android/server/power/DisplayPowerController;->DEBUG:Z
 
-    if-eqz v6, :cond_116
+    if-eqz v6, :cond_13e
 
     .line 1057
     const-string v6, "DisplayPowerController"
@@ -8684,10 +8888,10 @@
     invoke-static {v6, v8}, Landroid/util/Slog;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 1060
-    :cond_116
+    :cond_13e
     monitor-exit v7
-    :try_end_117
-    .catchall {:try_start_104 .. :try_end_117} :catchall_230
+    :try_end_13f
+    .catchall {:try_start_12c .. :try_end_13f} :catchall_2f1
 
     .line 1061
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->sendOnStateChanged()V
@@ -8696,11 +8900,11 @@
 
     .line 773
     .end local v1    # "mustNotify":Z
-    :cond_11c
-    :try_start_11c
+    :cond_144
+    :try_start_144
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mPendingRequestChangedLocked:Z
 
-    if-eqz v6, :cond_33
+    if-eqz v6, :cond_38
 
     .line 774
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
@@ -8713,13 +8917,13 @@
 
     cmpl-float v6, v6, v10
 
-    if-eqz v6, :cond_12d
+    if-eqz v6, :cond_155
 
     .line 776
     const/4 v4, 0x1
 
     .line 779
-    :cond_12d
+    :cond_155
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget-boolean v6, v6, Lcom/android/server/power/DisplayPowerRequest;->autoBrightnessForEbookOnly:Z
@@ -8728,7 +8932,7 @@
 
     iget-boolean v10, v10, Lcom/android/server/power/DisplayPowerRequest;->autoBrightnessForEbookOnly:Z
 
-    if-eq v6, v10, :cond_154
+    if-eq v6, v10, :cond_17c
 
     .line 781
     const-string v6, "DisplayPowerController"
@@ -8761,17 +8965,17 @@
     const/4 v4, 0x1
 
     .line 785
-    :cond_154
+    :cond_17c
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget v6, v6, Lcom/android/server/power/DisplayPowerRequest;->screenState:I
 
-    if-ne v6, v7, :cond_181
+    if-ne v6, v7, :cond_1a9
 
     move v5, v7
 
     .line 786
-    :goto_15b
+    :goto_183
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget-object v10, p0, Lcom/android/server/power/DisplayPowerController;->mPendingRequestLocked:Lcom/android/server/power/DisplayPowerRequest;
@@ -8816,44 +9020,44 @@
 
     iput-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mDisplayReadyLocked:Z
 
-    goto/16 :goto_33
+    goto/16 :goto_38
 
     .line 798
-    :catchall_17e
+    :catchall_1a6
     move-exception v6
 
     monitor-exit v9
-    :try_end_180
-    .catchall {:try_start_11c .. :try_end_180} :catchall_17e
+    :try_end_1a8
+    .catchall {:try_start_144 .. :try_end_1a8} :catchall_1a6
 
     throw v6
 
-    :cond_181
+    :cond_1a9
     move v5, v8
 
     .line 785
-    goto :goto_15b
+    goto :goto_183
 
-    :cond_183
+    :cond_1ab
     move v1, v8
 
     .line 797
-    goto/16 :goto_38
+    goto/16 :goto_3d
 
     .line 857
     .restart local v1    # "mustNotify":Z
-    :cond_186
+    :cond_1ae
     invoke-direct {p0, v7}, Lcom/android/server/power/DisplayPowerController;->setProximitySensorEnabled(Z)V
 
     .line 859
     iget v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximity:I
 
-    if-ne v6, v7, :cond_1b8
+    if-ne v6, v7, :cond_1e0
 
     .line 860
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnEvenThoughProximityPositive:Z
 
-    if-nez v6, :cond_19b
+    if-nez v6, :cond_1c3
 
     .line 861
     iput-boolean v7, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
@@ -8864,17 +9068,17 @@
     .line 863
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->sendOnProximityPositive()V
 
-    goto/16 :goto_7c
+    goto/16 :goto_81
 
     .line 865
-    :cond_19b
+    :cond_1c3
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
 
-    if-eqz v6, :cond_7c
+    if-eqz v6, :cond_81
 
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnEvenThoughProximityPositive:Z
 
-    if-eqz v6, :cond_7c
+    if-eqz v6, :cond_81
 
     .line 866
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
@@ -8885,7 +9089,7 @@
     .line 868
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnEvenThoughProximityPositive:Z
 
-    if-eqz v6, :cond_1b3
+    if-eqz v6, :cond_1db
 
     .line 869
     const-string v6, "DisplayPowerController"
@@ -8895,20 +9099,20 @@
     invoke-static {v6, v9}, Landroid/util/Slog;->d(Ljava/lang/String;Ljava/lang/String;)I
 
     .line 871
-    :cond_1b3
+    :cond_1db
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->sendOnProximityNegative()V
 
-    goto/16 :goto_7c
+    goto/16 :goto_81
 
     .line 874
-    :cond_1b8
+    :cond_1e0
     iget v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximity:I
 
-    if-nez v6, :cond_7c
+    if-nez v6, :cond_81
 
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
 
-    if-eqz v6, :cond_7c
+    if-eqz v6, :cond_81
 
     .line 875
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
@@ -8919,13 +9123,13 @@
     .line 877
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->sendOnProximityNegative()V
 
-    goto/16 :goto_7c
+    goto/16 :goto_81
 
     .line 884
-    :cond_1ca
+    :cond_1f2
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mWaitingForNegativeProximity:Z
 
-    if-eqz v6, :cond_1ed
+    if-eqz v6, :cond_215
 
     .line 886
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnEvenThoughProximityPositive:Z
@@ -8933,7 +9137,7 @@
     .line 887
     iget v6, p0, Lcom/android/server/power/DisplayPowerController;->mProximity:I
 
-    if-ne v6, v7, :cond_1de
+    if-ne v6, v7, :cond_206
 
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
@@ -8943,10 +9147,10 @@
 
     move-result v6
 
-    if-eqz v6, :cond_7c
+    if-eqz v6, :cond_81
 
     .line 888
-    :cond_1de
+    :cond_206
     invoke-direct {p0, v8}, Lcom/android/server/power/DisplayPowerController;->setProximitySensorEnabled(Z)V
 
     .line 890
@@ -8961,10 +9165,10 @@
     .line 893
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mWaitingForNegativeProximity:Z
 
-    goto/16 :goto_7c
+    goto/16 :goto_81
 
     .line 898
-    :cond_1ed
+    :cond_215
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOnEvenThoughProximityPositive:Z
 
     .line 899
@@ -8973,7 +9177,7 @@
     .line 901
     iget-boolean v6, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
 
-    if-eqz v6, :cond_7c
+    if-eqz v6, :cond_81
 
     .line 902
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mScreenOffBecauseOfProximity:Z
@@ -8984,22 +9188,22 @@
     .line 904
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->sendOnProximityNegative()V
 
-    goto/16 :goto_7c
+    goto/16 :goto_81
 
     .line 908
-    :cond_200
+    :cond_228
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mWaitingForNegativeProximity:Z
 
-    goto/16 :goto_7c
+    goto/16 :goto_81
 
-    :cond_204
+    :cond_22c
     move v6, v8
 
     .line 914
-    goto/16 :goto_95
+    goto/16 :goto_9a
 
     .line 932
-    :cond_207
+    :cond_22f
     iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerRequest:Lcom/android/server/power/DisplayPowerRequest;
 
     iget v3, v6, Lcom/android/server/power/DisplayPowerRequest;->screenBrightness:I
@@ -9012,39 +9216,130 @@
     .restart local v2    # "slow":Z
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mUsingScreenAutoBrightness:Z
 
-    goto/16 :goto_b0
+    goto/16 :goto_b5
 
     .line 950
-    :cond_210
-    if-eqz v5, :cond_cc
+    :cond_238
+    if-eqz v5, :cond_d1
 
     .line 952
     const/4 v2, 0x0
 
-    goto/16 :goto_cc
+    goto/16 :goto_d1
 
     .line 954
-    :cond_215
+    :cond_23d
     const/16 v6, 0x7d0
 
-    goto/16 :goto_d4
+    goto/16 :goto_d9
 
     .line 958
     .end local v2    # "slow":Z
     .end local v3    # "target":I
-    :cond_219
+    :cond_241
     iput-boolean v8, p0, Lcom/android/server/power/DisplayPowerController;->mUsingScreenAutoBrightness:Z
 
-    goto/16 :goto_d7
+    goto/16 :goto_dc
 
     .line 968
-    :cond_21d
+    :cond_245
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->unblockScreenOn()V
 
-    goto/16 :goto_f1
+    invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->getRotated()Z
+
+    move-result v10
+
+    if-nez v10, :cond_252
+
+    iget v10, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOn:I
+
+    if-nez v10, :cond_25e
+
+    :cond_252
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    const/high16 v7, 0x3f800000
+
+    invoke-virtual {v6, v7}, Lcom/android/server/power/DisplayPowerState;->setElectronBeamLevel(F)V
+
+    invoke-virtual {v6}, Lcom/android/server/power/DisplayPowerState;->dismissElectronBeam()V
+
+    goto/16 :goto_109
 
     .line 971
-    :cond_222
+    :cond_25e
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->isStarted()Z
+
+    move-result v6
+
+    if-nez v6, :cond_109
+
+    .line 9711
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    invoke-virtual {v6}, Lcom/android/server/power/DisplayPowerState;->getElectronBeamLevel()F
+
+    move-result v6
+
+    const/high16 v7, 0x3f800000
+
+    cmpl-float v6, v6, v7
+
+    if-nez v6, :cond_279
+
+    .line 9713
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    invoke-virtual {v6}, Lcom/android/server/power/DisplayPowerState;->dismissElectronBeam()V
+
+    goto/16 :goto_109
+
+    :cond_279
+    const v6, 0x2
+
+    if-eq v6, v10, :cond_281
+
+    const v10, 0x0
+
+    :cond_281
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    invoke-virtual {v6, v10}, Lcom/android/server/power/DisplayPowerState;->prepareElectronBeam(I)Z
+
+    move-result v6
+
+    if-eqz v6, :cond_290
+
+    .line 9714
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->start()V
+
+    goto/16 :goto_109
+
+    .line 9715
+    :cond_290
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->end()V
+
+    goto/16 :goto_109
+
+    .line 9716
+    :cond_297
+    invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->getRotated()Z
+
+    move-result v10
+
+    if-nez v10, :cond_2a1
+
+    iget v10, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOff:I
+
+    if-nez v10, :cond_2af
+
+    :cond_2a1
     invoke-direct {p0, v8}, Lcom/android/server/power/DisplayPowerController;->setScreenOn(Z)V
 
     .line 973
@@ -9052,21 +9347,92 @@
 
     iget-boolean v6, v6, Lcom/android/server/power/DisplayPowerRequest;->blockScreenOn:Z
 
-    if-nez v6, :cond_f1
+    if-nez v6, :cond_109
 
     .line 974
     invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->unblockScreenOn()V
 
-    goto/16 :goto_f1
+    goto/16 :goto_109
+
+    .line 975
+    :cond_2af
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOnAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->isStarted()Z
+
+    move-result v6
+
+    if-nez v6, :cond_109
+
+    .line 9751
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->isStarted()Z
+
+    move-result v6
+
+    if-nez v6, :cond_109
+
+    .line 9752
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    invoke-virtual {v6}, Lcom/android/server/power/DisplayPowerState;->getElectronBeamLevel()F
+
+    move-result v6
+
+    const v10, 0x0
+
+    cmpl-float v6, v6, v10
+
+    if-nez v6, :cond_2d1
+
+    invoke-direct {p0, v8}, Lcom/android/server/power/DisplayPowerController;->setScreenOn(Z)V
+
+    goto/16 :goto_109
+
+    .line 9753
+    :cond_2d1
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    iget v10, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOff:I
+
+    invoke-virtual {v6, v10}, Lcom/android/server/power/DisplayPowerState;->prepareElectronBeam(I)Z
+
+    move-result v6
+
+    if-eqz v6, :cond_2ea
+
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mPowerState:Lcom/android/server/power/DisplayPowerState;
+
+    invoke-virtual {v6}, Lcom/android/server/power/DisplayPowerState;->isScreenOn()Z
+
+    move-result v6
+
+    if-eqz v6, :cond_2ea
+
+    .line 9754
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->start()V
+
+    goto/16 :goto_109
+
+    .line 9755
+    :cond_2ea
+    iget-object v6, p0, Lcom/android/server/power/DisplayPowerController;->mElectronBeamOffAnimator:Landroid/animation/ObjectAnimator;
+
+    invoke-virtual {v6}, Landroid/animation/ObjectAnimator;->end()V
+
+    goto/16 :goto_109
 
     .line 1060
-    :catchall_230
+    :catchall_2f1
     move-exception v6
 
-    :try_start_231
+    :try_start_2f2
     monitor-exit v7
-    :try_end_232
-    .catchall {:try_start_231 .. :try_end_232} :catchall_230
+    :try_end_2f3
+    .catchall {:try_start_2f2 .. :try_end_2f3} :catchall_2f1
 
     throw v6
 .end method
@@ -9511,6 +9877,40 @@
     const/4 v0, 0x0
 
     goto :goto_5
+.end method
+
+.method public onAnimationCancel(Landroid/animation/Animator;)V
+    .registers 2
+    .param p1, "animation"    # Landroid/animation/Animator;
+
+    .prologue
+    return-void
+.end method
+
+.method public onAnimationEnd(Landroid/animation/Animator;)V
+    .registers 2
+    .param p1, "animation"    # Landroid/animation/Animator;
+
+    .prologue
+    invoke-direct {p0}, Lcom/android/server/power/DisplayPowerController;->sendUpdatePowerState()V
+
+    return-void
+.end method
+
+.method public onAnimationRepeat(Landroid/animation/Animator;)V
+    .registers 2
+    .param p1, "animation"    # Landroid/animation/Animator;
+
+    .prologue
+    return-void
+.end method
+
+.method public onAnimationStart(Landroid/animation/Animator;)V
+    .registers 2
+    .param p1, "animation"    # Landroid/animation/Animator;
+
+    .prologue
+    return-void
 .end method
 
 .method public requestButtonLedState(Z)V
